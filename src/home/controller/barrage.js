@@ -3,10 +3,8 @@
 import Base from './base.js';
 import HandleInput from './handle_input.js';
 export default class extends Base {
-    __before () {
-        this.setCrossHeader();
-    }
     async setbarrageAction () {
+        this.setCrossHeader();
         let video_time = this.post('video_time'),
             video_id = this.post('video_id'),
             barrage_val = this.post('barrage_val').trim(),
@@ -36,6 +34,7 @@ export default class extends Base {
     }
 
     async getbarrageAction () {
+        this.setCrossHeader();
         let video_time = this.get('video_time'),
             video_id = this.get('video_id');
 
@@ -56,6 +55,7 @@ export default class extends Base {
     * 开启跨域
     */
     setCrossHeader () {
+        console.log('set');
         this.http.res.setHeader('Access-Control-Allow-Origin', '*');
     }
 }
