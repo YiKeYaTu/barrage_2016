@@ -34,6 +34,7 @@ export default class extends Base {
     }
 
     async getbarrageAction () {
+        console.log('set');
         this.setCrossHeader();
         let video_time = this.get('video_time'),
             video_id = this.get('video_id');
