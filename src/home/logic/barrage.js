@@ -1,6 +1,9 @@
 'use strict';
 export default class extends think.logic.base {
     setbarrageAction () {
+        __before () {
+            this.setCrossHeader();
+        }
         this.allowMethods = 'post';
         let rules = {
             video_time: 'required|int',
@@ -39,5 +42,8 @@ export default class extends think.logic.base {
         } else {
             return 200;
         }
+    }
+    setCrossHeader () {
+        this.http.res.setHeader('Access-Control-Allow-Origin', '*');
     }
 }
