@@ -49,10 +49,4 @@ export default class extends Base {
             return this.fail(501);
         }
     }
-    /*
-    * 开启跨域
-    */
-    setCrossHeader () {
-        this.http.res.setHeader('Access-Control-Allow-Origin', '*');
-    }
 }
