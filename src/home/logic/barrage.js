@@ -25,7 +25,7 @@ export default class extends think.logic.base {
         };
 
         if (!this.validate(rules)) {
-            this.fail(401);
+            return this.fail(401);
         }
     }
 

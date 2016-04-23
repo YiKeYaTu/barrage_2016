@@ -23,11 +23,11 @@ export default class extends Base {
 
         try {
             await barrageModel.add({
-                video_time: video_time,
-                video_id: video_id,
-                barrage_val: barrage_val,
-                upload_time: upload_time,
-                user_id: user_id,
+                video_time: video_time, //视频时间 int
+                video_id: video_id, //视频id  int
+                barrage_val: barrage_val, //弹幕内容 varchar  length 5 - 30
+                upload_time: upload_time, //不管
+                user_id: user_id, // 上传人id   填1
             });
             this.end(barrage_val);
         } catch (e) {
@@ -43,8 +43,8 @@ export default class extends Base {
             let barrageModel = this.model('barrage');
             let res = await barrageModel
                 .where({
-                    video_id: video_id,
-                    video_time: video_time,
+                    video_id: video_id, // 视频id int
+                    video_time: video_time,  //视频时间 int
                 })
                 .select();
             this.json(res);
@@ -55,7 +55,7 @@ export default class extends Base {
     /*
     * 开启跨域
     */
-    async setCrossHeader () {
+    setCrossHeader () {
         this.http.res.setHeader('Access-Control-Allow-Origin', '*');
     }
 }

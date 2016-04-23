@@ -1,48 +1,130 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>New ThinkJS Application</title>
-<style>
-*{padding: 0;margin: 0;font-size: 16px;line-height: 20px;font-family: arial;}
-a, a:visited{color:#337ab7;text-decoration: none;}
-header{padding: 70px 0 70px 0;background-color: #4A6495}
-h1{font-size: 36px;color:#fff;font-weight: normal;}
-code{  padding: 2px 4px;font-size: 90%;color: #c7254e;background-color: #f9f2f4;border-radius: 4px;}
-.content{width: 1000px;margin: auto}
-.wrap{width: 1000px;margin: auto}
-.content{margin-top: 80px;}
-.list{width: 800px;}
-.list .item{position: relative;padding-left: 70px;margin-top: 50px;}
-.list .item .step{position: absolute;width: 36px;height: 36px;top:-3px;left:0;border: 5px solid #4A6495;border-radius: 23px;text-align: center;line-height: 36px;}
-.list .item h2{font-size: 24px;font-weight: normal;}
-.list .item p{line-height: 30px;margin-top: 10px}
-</style>
+  <title></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no" /> 
+  <link rel="stylesheet" type="text/css" href="/static/css/index.css">
 </head>
 <body>
-  <header>
-    <div class="wrap">
-      <h1>A New App Created By ThinkJS</h1>
-    </div>
-  </header>
-  <div class="content">
-    <div class="list">
-      <div class="item">
-        <div class="step">1</div>
-        <h2>Generate Files</h2>
-        <p>Run <code>thinkjs</code> command to create module, controler, model, service and so on. visit <a href="https://thinkjs.org/doc/thinkjs_command.html">https://thinkjs.org/doc/thinkjs_command.html</a> to view more infomation.</p>
-      </div>
-      <div class="item">
-        <div class="step">2</div>
-        <h2>Documatation</h2>
-        <p>ThinkJS has html and pdf documents. visit <a href="https://thinkjs.org/doc.html">https://thinkjs.org/doc.html</a></p>
-      </div>
-      <div class="item">
-        <div class="step">3</div>
-        <h2>WebSocket</h2>
-        <p>ThinkJS support <code>socket.io</code> and <code>sockjs</code> WebSocket client and server node. visit <a href="https://thinkjs.org/doc/adapter_websocket.html">https://thinkjs.org/doc/adapter_websocket.html</a></p>
-      </div>
-    </div>
-  </div>
+    <canvas width='600px' height="600px" id='canvas'></canvas>
+    <script>
+        function Game (conf) {
+          this.canvas = conf.canvas;
+          this.context = conf.canvas.getContext('2d');
+          this.columns = conf.columns;
+          this.row = conf.row;
+          this.width = window.innerWidth / conf.row;
+          this.height = window.innerHeight / conf.columns;
+          this.init();
+          this.flag = true;
+          this.posList = this.draw(0);
+          console.log(this.posList);
+        }
+        Game.prototype = {
+          constructor: Game,
+          draw: function (obj) {
+            if (obj === 0) {
+              var i, j, color, 
+                  temp = [];
+              for (i = 0; i < this.columns; i++) {
+                var black = this.randomColor(this.row);
+                for (j = 0; j < this.row; j++) {
+                  if (j === black) {
+                    color = '#000';
+                    this.context.fillStyle = color;
+                  } else {
+                    color = '#fff';
+                    this.context.fillStyle = color;
+                  }
+                  temp.push({
+                    color: color,
+                    x: j * this.width,
+                    y: i * this.height,
+                  });
+                  this.context.fillRect(j * this.width, i * this.height, this.width, this.height);
+                }
+              }
+              return temp;
+            } else {
+              this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+              obj.forEach(function (item) {
+                this.context.fillStyle = item.color;
+                this.context.fillRect(item.x, item.y, this.width, this.height);
+              }.bind(this));
+            }
+            
+          },
+          init: function () {
+            this.canvas.width = window.innerWidth;
+            this.canvas.height = window.innerHeight;
+          },
+          touch: function (e) {
+            var x = e.clientX,
+                y = e.clientY;
+            if (y >= window.innerHeight - this.height) {
+              for (var i = this.posList.length - 1; i > this.posList.length - 1 - this.row; i--) {
+                if (this.posList[i].color === '#000') {
+                  if (x >= this.posList[i].x && x <= this.posList[i].x + this.width) {
+                    this.animation(100);
+                  }
+                }
+              }
+            } else {
+              this.error();
+            }
+            
+          },
+          error: function () {
+
+          },
+          animation: function (timer) {
+            if (!this.flag) return false;
+            this.flag = false;
+            var timeScal = 1000 / 60;
+            var count = timer / timeScal;
+            var hasDone = 0;
+            var distance = this.height / count;
+            var black = this.randomColor(this.row);
+            var color;
+            for (var i = 0; i < this.row; i++) {
+              if (black === i) {
+                color = '#000';
+              } else {
+                color = '#fff';
+              }
+              this.posList.unshift({
+                color: color,
+                x: i * this.width,
+                y: -this.height,
+              });
+            }
+            var animationTimer = setInterval(function () {
+              hasDone++;
+              if (hasDone >= count) {
+                  clearInterval(animationTimer);
+                  this.flag = true;
+                  this.posList.splice(this.posList.length - 3);
+              }
+              this.posList.forEach(function (item, index) {
+                item.y += distance;
+              });
+              this.draw(this.posList);
+            }.bind(this), timeScal);
+          },
+          randomColor: function (top) {
+            return Math.floor(Math.random() * top);
+          }
+        }
+        var T = new Game({
+          canvas: document.getElementById('canvas'),
+          columns: 3,
+          row: 3
+        });
+        T.canvas.addEventListener('touchstart', function (e) {
+          T.touch(e.touches[0]);
+          // T.animation(100);
+        })
+
+    </script>
 </body>
 </html>
